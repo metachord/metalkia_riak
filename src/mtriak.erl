@@ -9,6 +9,7 @@
 -module(mtriak).
 
 -include_lib("metalkia_core/include/mt_records.hrl").
+-include_lib("metalkia_core/include/mt_util.hrl").
 -include_lib("metalkia_core/include/mt_log.hrl").
 
 -export([
@@ -23,7 +24,7 @@ add_post(Post) when is_record(Post, mt_post) ->
   gen_server:call(?SERVER, {add_post, Post}).
 
 get_post(PostId) ->
-  gen_server:call(?SERVER, {get_post, PostId}).
+  gen_server:call(?SERVER, {get_post, ?a2b(PostId)}).
 
 add_comment(PostId, ParentId, Comment) when is_record(Comment, mt_comment) ->
-  gen_server:call(?SERVER, {add_comment, PostId, ParentId, Comment}).
+  gen_server:call(?SERVER, {add_comment, ?a2b(PostId), ParentId, Comment}).
