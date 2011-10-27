@@ -20,11 +20,17 @@
 
 -define(SERVER, mtriak_srv).
 
+-define(CALL_TO, 15000).
+
 add_post(Post) when is_record(Post, mt_post) ->
-  gen_server:call(?SERVER, {add_post, Post}).
+  iface_call({add_post, Post}).
 
 get_post(PostId) ->
-  gen_server:call(?SERVER, {get_post, ?a2b(PostId)}).
+  iface_call({get_post, ?a2b(PostId)}).
 
 add_comment(PostId, ParentId, Comment) when is_record(Comment, mt_comment) ->
-  gen_server:call(?SERVER, {add_comment, ?a2b(PostId), ParentId, Comment}).
+  iface_call({add_comment, ?a2b(PostId), ParentId, Comment}).
+
+%% Internal
+iface_call(Call) ->
+  gen_server:call(?SERVER, Call, ?CALL_TO).
