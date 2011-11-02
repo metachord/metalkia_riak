@@ -6,4 +6,5 @@
               {included_applications,[riak_kv]},
               {mod,{mtriak_app,[]}},
               {env,[]},
-              {modules,[mtriak,mtriak_app,mtriak_srv,mtriak_sup]}]}.
+              {modules,[mtriak,mtriak_app,mtriak_srv,mtriak_sup,
+                        mtriak_worker]}]}.
