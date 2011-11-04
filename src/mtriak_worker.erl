@@ -95,7 +95,6 @@ handle_call({put_obj_value, Object, Data, Bucket, Key}, _From,
     end,
   {reply, ok, NewState};
 
-
 handle_call({inc_counter, Key}, _From,
             #state{client = Client} = State) ->
   Bucket = <<"counters">>,
@@ -115,85 +114,6 @@ handle_call({inc_counter, Key}, _From,
     end,
   Client:put(NewObj, 3),
   {reply, Id, State};
-
-handle_call({add_post, Post}, _From,
-  #state{client = Client} = State) ->
-  ?PG2_LEAVE,
-  {Data, Object} =
-    case Client:get(<<"posts">>, <<"main">>) of
-      {ok, Obj} ->
-        {riak_object:get_value(Obj), Obj};
-      _ ->
-        {[], undefined}
-    end,
-
-  Key = counter,
-  Id = proplists:get_value(Key, Data, 1),
-  NewId = Id+1,
-  NewData = lists:keystore(Key, 1, Data, {Key, NewId}),
-
-  NewObj =
-    if Object =:= undefined ->
-        riak_object:new(<<"posts">>, <<"main">>, NewData);
-       true ->
-        riak_object:update_value(Object, NewData)
-    end,
-
-  Client:put(NewObj, 3),
-
-  PostObj = riak_object:new(<<"posts">>, iolist_to_binary(integer_to_list(NewId)), Post),
-  Client:put(PostObj, 3),
-  ?PG2_JOIN,
-  {reply, Id, State};
-
-handle_call({add_comment, PostId, #mt_comment{parents = Parents} = Comment}, _From,
-  #state{client = Client} = State) ->
-  ?PG2_LEAVE,
-  ?DBG("PostId: ~p~nComment: ~p", [PostId, Comment]),
-  {ok, PostObj} = Client:get(<<"posts">>, iolist_to_binary(PostId)),
-  #mt_post{
-    comments_cnt = CommCnt,
-    comments = Comments
-  } = Post = riak_object:get_value(PostObj),
-
-  NewId = CommCnt+1,
-  NewPost = Post#mt_post{
-    comments_cnt = NewId,
-    comments = [Comment#mt_comment{parents = Parents ++ [NewId]} | Comments]
-  },
-
-  NewObj = riak_object:update_value(PostObj, NewPost),
-  Client:put(NewObj, 3),
-  ?PG2_JOIN,
-  {reply, NewId, State};
-
-handle_call({get_post, PostId}, _From,
-  #state{client = Client} = State) ->
-  ?PG2_LEAVE,
-  ?DBG("PostId: ~p", [PostId]),
-  Result =
-  case Client:get(<<"posts">>, iolist_to_binary(PostId)) of
-    {ok, PostObj} ->
-      riak_object:get_value(PostObj);
-    Error ->
-      Error
-  end,
-  ?PG2_JOIN,
-  {reply, Result, State};
-
-handle_call({get_posts, PostId}, _From,
-  #state{client = Client} = State) ->
-  ?PG2_LEAVE,
-  ?DBG("PostId: ~p", [PostId]),
-  Result =
-  case Client:get(<<"posts">>, iolist_to_binary(PostId)) of
-    {ok, PostObj} ->
-      riak_object:get_value(PostObj);
-    Error ->
-      Error
-  end,
-  ?PG2_JOIN,
-  {reply, Result, State};
 
 handle_call(Request, _From, State) ->
   Error = {unknown_call, Request},

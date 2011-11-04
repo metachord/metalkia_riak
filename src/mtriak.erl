@@ -16,9 +16,6 @@
 
 -export([
   get_pid/0,
-  add_post/1,
-  add_comment/2,
-  get_post/1,
   inc_counter/1,
   get_obj_value/2,
   get_obj_value/3,
@@ -52,15 +49,6 @@ put_obj_value(Object, Data, Bucket, Key) ->
 
 put_obj_value(Pid, Object, Data, Bucket, Key) ->
   gen_server:call(Pid, {put_obj_value, Object, Data, Bucket, Key}, ?CALL_TO).
-
-add_post(Post) when is_record(Post, mt_post) ->
-  iface_call({add_post, Post}).
-
-get_post(PostId) ->
-  iface_call({get_post, ?a2b(PostId)}).
-
-add_comment(PostId, Comment) when is_record(Comment, mt_comment) ->
-  iface_call({add_comment, ?a2b(PostId), Comment}).
 
 inc_counter(Key)
   when is_binary(Key) ->
