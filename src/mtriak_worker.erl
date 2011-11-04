@@ -35,7 +35,8 @@
 -record(state, {
           node     :: node(),
           client   :: pid(),
-          joined   :: boolean()
+          joined   :: boolean(),
+          replicas :: [{binary(), integer()}]
          }).
 
 %%% API
@@ -49,11 +50,13 @@ init(Args) ->
   ?DBG("Worker for ~p", [Node]),
   {ok, Client} = riak:client_connect(Node),
   ?DBG("Riak Client: ~p", [Client]),
+  Replicas = mtriak_app:get_env(bucket_replicas, []),
   ?PG2_JOIN,
   {ok, #state{
      node = Node,
      client = Client,
-     joined = true
+     joined = true,
+     replicas = Replicas
     }}.
 
 
@@ -85,7 +88,7 @@ handle_call({put_obj_value, Object, Data, Bucket, Key}, _From,
        true ->
         riak_object:update_value(Object, Data)
     end,
-  Client:put(NewObj, 3),
+  Client:put(NewObj, get_replicas(Bucket, State)),
   NewState =
     if State#state.joined ->
         State;
@@ -112,7 +115,7 @@ handle_call({inc_counter, Key}, _From,
        true ->
         riak_object:update_value(Object, NewData)
     end,
-  Client:put(NewObj, 3),
+  Client:put(NewObj, get_replicas(Bucket, State)),
   {reply, Id, State};
 
 handle_call(Request, _From, State) ->
@@ -136,3 +139,5 @@ code_change(_OldVsn, State, _Extra) ->
   {ok, State}.
 
 %%% Internal functions
+get_replicas(Bucket, State) ->
+  proplists:get_value(Bucket, State#state.replicas, 3).
