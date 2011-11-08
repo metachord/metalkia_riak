@@ -98,6 +98,11 @@ handle_call({put_obj_value, Object, Data, Bucket, Key}, _From,
     end,
   {reply, ok, NewState};
 
+handle_call({delete, Bucket, Key}, _From,
+            #state{client = Client} = State) ->
+  Client:delete(Bucket, Key, get_replicas(Bucket, State)),
+  {reply, ok, State};
+
 handle_call({inc_counter, Key}, _From,
             #state{client = Client} = State) ->
   Bucket = <<"counters">>,

@@ -22,7 +22,9 @@
   get_obj_value_to_modify/2,
   get_obj_value_to_modify/3,
   put_obj_value/4,
-  put_obj_value/5
+  put_obj_value/5,
+  delete/2,
+  delete/3
 ]).
 
 -define(SERVER, mtriak_srv).
@@ -49,6 +51,12 @@ put_obj_value(Object, Data, Bucket, Key) ->
 
 put_obj_value(Pid, Object, Data, Bucket, Key) ->
   gen_server:call(Pid, {put_obj_value, Object, Data, Bucket, Key}, ?CALL_TO).
+
+delete(Bucket, Key) ->
+  delete(get_pid(), Bucket, Key).
+
+delete(Pid, Bucket, Key) ->
+  gen_server:call(Pid, {delete, Bucket, Key}, ?CALL_TO).
 
 inc_counter(Key)
   when is_binary(Key) ->
