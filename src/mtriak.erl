@@ -8,7 +8,6 @@
 %%%-------------------------------------------------------------------
 -module(mtriak).
 
--include_lib("metalkia_core/include/mt_records.hrl").
 -include_lib("metalkia_core/include/mt_util.hrl").
 -include_lib("metalkia_core/include/mt_log.hrl").
 

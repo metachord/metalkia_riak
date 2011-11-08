@@ -10,7 +10,6 @@
 
 -behaviour(gen_server).
 
--include_lib("metalkia_core/include/mt_records.hrl").
 -include_lib("metalkia_core/include/mt_log.hrl").
 
 -include("mtriak.hrl").
