@@ -122,6 +122,16 @@ handle_call({inc_counter, Key}, _From,
   Client:put(NewObj, get_replicas(Bucket, State)),
   {reply, Id, State};
 
+handle_call({list_keys, Bucket}, _From,
+            #state{client = Client} = State) ->
+  Keys = Client:list_keys(Bucket),
+  {reply, Keys, State};
+
+handle_call({delete_keys, Bucket, Keys}, _From,
+            #state{client = Client} = State) ->
+  [Client:delete(Bucket, Key) || Key <- Keys],
+  {reply, ok, State};
+
 handle_call(Request, _From, State) ->
   Error = {unknown_call, Request},
   {stop, Error, {error, Error}, State}.

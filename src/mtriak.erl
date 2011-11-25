@@ -23,7 +23,15 @@
   put_obj_value/4,
   put_obj_value/5,
   delete/2,
-  delete/3
+  delete/3,
+  list_keys/1,
+  list_keys/2,
+  delete_keys/2,
+  delete_keys/3
+]).
+
+-export([
+  rl/0
 ]).
 
 -define(SERVER, mtriak_srv).
@@ -57,9 +65,24 @@ delete(Bucket, Key) ->
 delete(Pid, Bucket, Key) ->
   gen_server:call(Pid, {delete, Bucket, Key}, ?CALL_TO).
 
+list_keys(Bucket) ->
+  list_keys(get_pid(), Bucket).
+
+list_keys(Pid, Bucket) ->
+  gen_server:call(Pid, {list_keys, Bucket}, ?CALL_TO).
+
+delete_keys(Bucket, Keys) ->
+  delete_keys(get_pid(), Bucket, Keys).
+
+delete_keys(Pid, Bucket, Keys) ->
+  gen_server:call(Pid, {delete_keys, Bucket, Keys}, ?CALL_TO).
+
 inc_counter(Key)
   when is_binary(Key) ->
   iface_call({inc_counter, Key}).
+
+rl() ->
+  mtc:rl(?MODULE).
 
 %% Internal
 iface_call(Call) ->
