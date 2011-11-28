@@ -24,6 +24,8 @@
   put_obj_value/5,
   delete/2,
   delete/3,
+  list_buckets/0,
+  list_buckets/1,
   list_keys/1,
   list_keys/2,
   delete_keys/2,
@@ -64,6 +66,12 @@ delete(Bucket, Key) ->
 
 delete(Pid, Bucket, Key) ->
   gen_server:call(Pid, {delete, Bucket, Key}, ?CALL_TO).
+
+list_buckets() ->
+  list_buckets(get_pid()).
+
+list_buckets(Pid) ->
+  gen_server:call(Pid, {list_buckets}, ?CALL_TO).
 
 list_keys(Bucket) ->
   list_keys(get_pid(), Bucket).

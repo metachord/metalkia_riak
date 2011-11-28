@@ -122,6 +122,11 @@ handle_call({inc_counter, Key}, _From,
   Client:put(NewObj, get_replicas(Bucket, State)),
   {reply, Id, State};
 
+handle_call({list_buckets}, _From,
+            #state{client = Client} = State) ->
+  Keys = Client:list_buckets(),
+  {reply, Keys, State};
+
 handle_call({list_keys, Bucket}, _From,
             #state{client = Client} = State) ->
   Keys = Client:list_keys(Bucket),
