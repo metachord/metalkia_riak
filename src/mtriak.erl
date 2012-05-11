@@ -1,15 +1,6 @@
 %%% @copyright  2012 Metachord Ltd.
 %%% @author     Max Treskin <mtreskin@metachord.com>
 
-
-%%%-------------------------------------------------------------------
-%%% @author Maxim Treskin <mtreskin@metachord.com>
-%%% @copyright (C) 2011, Maxim Treskin
-%%% @doc
-%%%
-%%% @end
-%%% Created :  7 Oct 2011 by Maxim Treskin <mtreskin@metachord.com>
-%%%-------------------------------------------------------------------
 -module(mtriak).
 
 -include_lib("metalkia_core/include/mt_util.hrl").
